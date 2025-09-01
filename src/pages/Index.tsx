@@ -3,11 +3,12 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { BookOpen, Shuffle, Star, Globe, Sparkles } from "lucide-react";
+import { BookOpen, Shuffle, Globe, Sparkles } from "lucide-react";
 import { mockFolktales, categories, regions, Folktale } from "@/data/folktales";
 import { StoryCard } from "@/components/StoryCard";
 import { SearchBar } from "@/components/SearchBar";
 import { useToast } from "@/hooks/use-toast";
+import heroImage from "@/assets/hero-folktales.jpg";
 
 const Index = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -114,15 +115,22 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
-      <section className="bg-gradient-hero text-primary-foreground py-16">
-        <div className="container mx-auto px-4 text-center">
+      <section 
+        className="bg-gradient-hero text-primary-foreground py-20 relative overflow-hidden"
+        style={{
+          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url(${heroImage})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+      >
+        <div className="container mx-auto px-4 text-center relative z-10">
           <div className="max-w-4xl mx-auto">
             <Sparkles className="w-12 h-12 mx-auto mb-4 text-story-gold" />
             <h1 className="text-5xl font-bold mb-6">
-              Folklore Canvas
+              Folktales Canvas
             </h1>
             <p className="text-xl mb-8 opacity-90">
-              Discover timeless tales from around the world. Immerse yourself in the wisdom, magic, and wonder of traditional folktales passed down through generations.
+              Discover timeless folktales from around the world. Immerse yourself in the wisdom, magic, and wonder of traditional stories passed down through generations.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button 
@@ -234,11 +242,10 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Footer */}
       <footer className="bg-card border-t border-parchment-dark/20 py-8">
         <div className="container mx-auto px-4 text-center">
           <p className="text-muted-foreground">
-            Discover the world's wisdom through stories. Connect to{" "}
+            Discover the world's wisdom through folktales. Connect to{" "}
             <span className="text-primary font-semibold">Supabase</span> to save favorites and unlock more features.
           </p>
         </div>
