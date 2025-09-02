@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Separator } from "@/components/ui/separator";
 import { BookOpen, Mail, Lock } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 interface LoginFormProps {
   onToggleMode: () => void;
@@ -33,22 +34,48 @@ export const LoginForm = ({ onToggleMode, isSignUp }: LoginFormProps) => {
       return;
     }
 
-    // Simulate authentication (replace with real Supabase auth)
-    setTimeout(() => {
+    try {
+      if (isSignUp) {
+        const redirectUrl = `${window.location.origin}/`;
+        const { error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            emailRedirectTo: redirectUrl
+          }
+        });
+
+        if (error) throw error;
+
+        toast({
+          title: "Account Created!",
+          description: "Please check your email to verify your account.",
+        });
+      } else {
+        const { error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+
+        if (error) throw error;
+
+        toast({
+          title: "Welcome Back!",
+          description: "You've successfully signed in.",
+        });
+        
+        // Redirect to stories
+        window.location.href = "/";
+      }
+    } catch (error: any) {
       toast({
-        title: isSignUp ? "Account Created!" : "Welcome Back!",
-        description: `${isSignUp ? "Please check your email to verify your account." : "You've successfully signed in."}`,
+        title: "Authentication Error",
+        description: error.message || "An error occurred during authentication.",
+        variant: "destructive",
       });
-      
-      // For demo purposes, store a simple auth token
-      localStorage.setItem("isAuthenticated", "true");
-      localStorage.setItem("userEmail", email);
-      
-      // Redirect to stories
-      window.location.href = "/";
-      
+    } finally {
       setIsLoading(false);
-    }, 1500);
+    }
   };
 
   return (
@@ -148,7 +175,7 @@ export const LoginForm = ({ onToggleMode, isSignUp }: LoginFormProps) => {
           
           <div className="text-center pt-4">
             <p className="text-xs text-muted-foreground">
-              Connect to Supabase for full authentication features
+              Secure authentication powered by Supabase
             </p>
           </div>
         </CardContent>

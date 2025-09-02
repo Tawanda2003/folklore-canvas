@@ -2,21 +2,48 @@ import { Button } from "@/components/ui/button";
 import { BookOpen, LogOut, User } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { useEffect, useState } from "react";
+import type { User as SupabaseUser } from "@supabase/supabase-js";
 
 export const Navigation = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const isAuthenticated = localStorage.getItem("isAuthenticated") === "true";
-  const userEmail = localStorage.getItem("userEmail");
+  const [user, setUser] = useState<SupabaseUser | null>(null);
 
-  const handleLogout = () => {
-    localStorage.removeItem("isAuthenticated");
-    localStorage.removeItem("userEmail");
-    toast({
-      title: "Signed Out",
-      description: "You've been successfully signed out.",
+  useEffect(() => {
+    // Set up auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        setUser(session?.user ?? null);
+      }
+    );
+
+    // Check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
     });
-    navigate("/login");
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleLogout = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      
+      toast({
+        title: "Signed Out",
+        description: "You've been successfully signed out.",
+      });
+      navigate("/login");
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Error signing out.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -28,11 +55,11 @@ export const Navigation = () => {
             <span className="font-bold text-xl text-primary">Folktales Canvas</span>
           </Link>
           
-          {isAuthenticated ? (
+          {user ? (
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <User className="w-4 h-4" />
-                <span>{userEmail}</span>
+                <span>{user.email}</span>
               </div>
               <Button
                 variant="ghost"
