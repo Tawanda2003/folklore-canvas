@@ -3,8 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { BookOpen, Shuffle, Globe, Sparkles } from "lucide-react";
-import { mockFolktales, categories, regions, Folktale } from "@/data/folktales";
+import { BookOpen, Shuffle, Globe, Sparkles, Loader2 } from "lucide-react";
+import { useFolktales, type Folktale } from "@/hooks/useFolktales";
 import { StoryCard } from "@/components/StoryCard";
 import { SearchBar } from "@/components/SearchBar";
 import { useToast } from "@/hooks/use-toast";
@@ -16,9 +16,21 @@ const Index = () => {
   const [selectedRegion, setSelectedRegion] = useState("All Regions");
   const [selectedStory, setSelectedStory] = useState<Folktale | null>(null);
   const { toast } = useToast();
+  const { folktales, loading } = useFolktales();
+
+  // Get unique categories and regions from the actual data
+  const categories = useMemo(() => {
+    const uniqueCategories = [...new Set(folktales.map(story => story.category))];
+    return ["All Stories", ...uniqueCategories];
+  }, [folktales]);
+
+  const regions = useMemo(() => {
+    const uniqueRegions = [...new Set(folktales.map(story => story.region))];
+    return ["All Regions", ...uniqueRegions];
+  }, [folktales]);
 
   const filteredStories = useMemo(() => {
-    return mockFolktales.filter((story) => {
+    return folktales.filter((story) => {
       const matchesSearch = 
         story.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         story.summary.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -30,14 +42,15 @@ const Index = () => {
       
       return matchesSearch && matchesCategory && matchesRegion;
     });
-  }, [searchQuery, selectedCategory, selectedRegion]);
+  }, [folktales, searchQuery, selectedCategory, selectedRegion]);
 
   const getRandomStory = () => {
-    const randomIndex = Math.floor(Math.random() * mockFolktales.length);
-    setSelectedStory(mockFolktales[randomIndex]);
+    if (folktales.length === 0) return;
+    const randomIndex = Math.floor(Math.random() * folktales.length);
+    setSelectedStory(folktales[randomIndex]);
     toast({
       title: "Random Story Selected!",
-      description: `Now reading: ${mockFolktales[randomIndex].title}`,
+      description: `Now reading: ${folktales[randomIndex].title}`,
     });
   };
 
@@ -209,7 +222,17 @@ const Index = () => {
       <section className="py-12">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
-            {filteredStories.length === 0 ? (
+            {loading ? (
+              <Card className="text-center py-12">
+                <CardHeader>
+                  <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4" />
+                  <CardTitle>Loading Folktales...</CardTitle>
+                  <CardDescription>
+                    Fetching stories from the database
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+            ) : filteredStories.length === 0 ? (
               <Card className="text-center py-12">
                 <CardHeader>
                   <CardTitle>No Stories Found</CardTitle>
