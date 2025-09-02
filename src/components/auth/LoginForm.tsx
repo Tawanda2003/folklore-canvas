@@ -68,9 +68,21 @@ export const LoginForm = ({ onToggleMode, isSignUp }: LoginFormProps) => {
         window.location.href = "/";
       }
     } catch (error: any) {
+      let title = "Authentication Error";
+      let description = error.message || "An error occurred during authentication.";
+      
+      // Handle specific error cases
+      if (error.message?.includes("Email not confirmed")) {
+        title = "Email Not Confirmed";
+        description = "Please check your email and click the confirmation link before signing in.";
+      } else if (error.message?.includes("Invalid login credentials")) {
+        title = "Invalid Credentials";
+        description = "Please check your email and password and try again.";
+      }
+      
       toast({
-        title: "Authentication Error",
-        description: error.message || "An error occurred during authentication.",
+        title,
+        description,
         variant: "destructive",
       });
     } finally {
