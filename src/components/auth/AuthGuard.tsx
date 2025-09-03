@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, Link } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { BookOpen, Lock } from "lucide-react";
@@ -64,17 +64,17 @@ export const AuthGuard = ({ children }: AuthGuardProps) => {
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <Button 
-                onClick={() => window.location.href = "/login"}
+                asChild
                 className="w-full bg-gradient-hero hover:opacity-90"
               >
-                Sign In
+                <Link to="/login">Sign In</Link>
               </Button>
               <Button 
-                onClick={() => window.location.href = "/signup"}
+                asChild
                 variant="outline"
                 className="w-full"
               >
-                Create Account
+                <Link to="/signup">Create Account</Link>
               </Button>
             </div>
             <p className="text-xs text-muted-foreground mt-4">
