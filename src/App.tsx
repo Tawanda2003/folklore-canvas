@@ -8,6 +8,7 @@ import { Navigation } from "@/components/Navigation";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import Notes from "./pages/Notes";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -27,6 +28,14 @@ const App = () => (
                 <Navigation />
                 <AuthGuard>
                   <Index />
+                </AuthGuard>
+              </>
+            } />
+            <Route path="/notes" element={
+              <>
+                <Navigation />
+                <AuthGuard>
+                  <Notes />
                 </AuthGuard>
               </>
             } />
