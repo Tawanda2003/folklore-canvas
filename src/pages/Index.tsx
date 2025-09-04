@@ -3,11 +3,12 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { BookOpen, Shuffle, Globe, Sparkles, Loader2 } from "lucide-react";
+import { BookOpen, Shuffle, Globe, Sparkles, Loader2, Heart } from "lucide-react";
 import { useFolktales, type Folktale } from "@/hooks/useFolktales";
 import { StoryCard } from "@/components/StoryCard";
 import { SearchBar } from "@/components/SearchBar";
 import { useToast } from "@/hooks/use-toast";
+import { useFolktaleLikes } from "@/hooks/useFolktaleLikes";
 import heroImage from "@/assets/hero-folktales.jpg";
 
 const Index = () => {
@@ -17,6 +18,7 @@ const Index = () => {
   const [selectedStory, setSelectedStory] = useState<Folktale | null>(null);
   const { toast } = useToast();
   const { folktales, loading } = useFolktales();
+  const { toggleLike, isLiked } = useFolktaleLikes();
 
   // Get unique categories and regions from the actual data
   const categories = useMemo(() => {
@@ -110,7 +112,15 @@ const Index = () => {
               </div>
             </div>
             
-            <footer className="mt-8 pt-6 border-t border-parchment-dark/20">
+            <footer className="mt-8 pt-6 border-t border-parchment-dark/20 flex items-center justify-between">
+              <Button
+                variant="ghost"
+                onClick={() => toggleLike(selectedStory.id)}
+                className={`${isLiked(selectedStory.id) ? 'text-red-500' : 'text-muted-foreground'} hover:text-red-500`}
+              >
+                <Heart className={`w-5 h-5 mr-2 ${isLiked(selectedStory.id) ? 'fill-current' : ''}`} />
+                {isLiked(selectedStory.id) ? 'Liked' : 'Like Story'}
+              </Button>
               <Button 
                 onClick={() => setSelectedStory(null)}
                 className="bg-gradient-hero hover:opacity-90 text-primary-foreground"
@@ -158,7 +168,7 @@ const Index = () => {
               <Button 
                 size="lg"
                 variant="outline"
-                className="border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary"
+                className="border-primary-foreground text-primary"
               >
                 <Globe className="w-5 h-5 mr-2" />
                 Browse Stories by Region

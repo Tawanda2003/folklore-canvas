@@ -1,7 +1,9 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Clock, MapPin, BookOpen } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Clock, MapPin, BookOpen, Heart } from "lucide-react";
 import { Folktale } from "@/data/folktales";
+import { useFolktaleLikes } from "@/hooks/useFolktaleLikes";
 
 interface StoryCardProps {
   story: Folktale;
@@ -9,6 +11,13 @@ interface StoryCardProps {
 }
 
 export const StoryCard = ({ story, onClick }: StoryCardProps) => {
+  const { toggleLike, isLiked } = useFolktaleLikes();
+  
+  const handleLikeClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    toggleLike(story.id);
+  };
+
   return (
     <Card 
       className="group cursor-pointer transition-all duration-300 hover:shadow-story bg-gradient-card border-parchment-dark/20 hover:scale-[1.02]"
@@ -54,9 +63,19 @@ export const StoryCard = ({ story, onClick }: StoryCardProps) => {
             </Badge>
           )}
         </div>
-        <div className="flex items-center justify-end mt-3 text-primary group-hover:text-primary-glow transition-colors">
-          <BookOpen className="w-4 h-4 mr-1" />
-          <span className="text-sm font-medium">Read Story</span>
+        <div className="flex items-center justify-between mt-3">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleLikeClick}
+            className={`p-2 ${isLiked(story.id) ? 'text-red-500' : 'text-muted-foreground'} hover:text-red-500`}
+          >
+            <Heart className={`w-4 h-4 ${isLiked(story.id) ? 'fill-current' : ''}`} />
+          </Button>
+          <div className="flex items-center text-primary group-hover:text-primary-glow transition-colors">
+            <BookOpen className="w-4 h-4 mr-1" />
+            <span className="text-sm font-medium">Read Story</span>
+          </div>
         </div>
       </CardContent>
     </Card>

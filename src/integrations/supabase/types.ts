@@ -14,6 +14,35 @@ export type Database = {
   }
   public: {
     Tables: {
+      folktale_likes: {
+        Row: {
+          created_at: string
+          folktale_id: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          folktale_id: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          folktale_id?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "folktale_likes_folktale_id_fkey"
+            columns: ["folktale_id"]
+            isOneToOne: false
+            referencedRelation: "folktales"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       folktales: {
         Row: {
           created_at: string | null
